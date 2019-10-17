@@ -1,19 +1,20 @@
 package com.drool.engine.controller;
 
-import com.drool.engine.entity.QueryParam;
-import com.drool.engine.entity.RuleResult;
-import com.drool.engine.service.RuleEngineService;
+import javax.annotation.Resource;
+
 import org.kie.api.runtime.KieSession;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import javax.annotation.Resource;
+
+import com.drool.engine.config.SpringContextUtil;
+import com.drool.engine.entity.QueryParam;
+import com.drool.engine.entity.RuleResult;
+import com.drool.engine.service.RuleEngineService;
 
 @RestController
 @RequestMapping("/rule")
 public class RuleController {
 
-    @Resource
-    private KieSession kieSession;
     @Resource
     private RuleEngineService ruleEngineService ;
 
@@ -25,6 +26,7 @@ public class RuleController {
         QueryParam queryParam2 = new QueryParam() ;
         queryParam2.setParamId("2");
         queryParam2.setParamSign("-");
+        KieSession kieSession = (KieSession) SpringContextUtil.getBean("kieSession");
         // 入参
         kieSession.insert(queryParam1) ;
         kieSession.insert(queryParam2) ;
@@ -34,5 +36,6 @@ public class RuleController {
         RuleResult resultParam = new RuleResult() ;
         kieSession.insert(resultParam) ;
         kieSession.fireAllRules() ;
+        kieSession.destroy();
     }
 }
